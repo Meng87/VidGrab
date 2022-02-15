@@ -2,7 +2,7 @@ import sys, getopt, os
 import pytube
 import xmltodict, json
 
-def get(url, video_path, caption_path, write_caption=True, debug=False, write_if_both=True):
+def get(url, video_path, caption_path, write_caption=False, debug=False, write_if_both=False):
    if (not os.path.isdir(video_path) or not os.path.isdir(caption_path)):
       print("Error: Invalid File Path.")
       return
@@ -121,7 +121,7 @@ def get(url, video_path, caption_path, write_caption=True, debug=False, write_if
 
 if __name__ == "__main__":
    url, video_path, caption_path = None, None, None
-   write_caption, debug, write_if_both = True, False, True
+   write_caption, debug, write_if_both = None, None, None
    try:
       opts, args = getopt.getopt(sys.argv[1:],
                                  "u:v:c:wdb",
