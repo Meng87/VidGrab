@@ -6,9 +6,9 @@ This tool was developed to automate the process of downloading videos and transc
 ## Dependencies and Installation Instructions
 
 * pytube
-    * pip install git+https://github.com/rmerzouki/pytube
+    * `pip install git+https://github.com/rmerzouki/pytube`
 * xmltodict
-    * pip install xmltodict
+    * `pip install xmltodict`
 * Python 3.6 and above
 
 ## Usage
@@ -48,9 +48,10 @@ The output follows the following format:
 ~~~~
 
 ## Failure Cases
-Object returned will reflect error
+The output in the failure cases will contain information about the error.
 
 No English captions are available.
+~~~~
 {
     'video_id': <string>,
     'url': <string>,
@@ -59,8 +60,18 @@ No English captions are available.
     'intervals': None,
     'transcript_type': None
 }
+~~~~
+
 Video is not found.
-`{"error": "video_not_found"}`
+~~~~
+{
+   "error": "video_not_found"
+}
+~~~~
 
 Unable to download the video.
-`{"error": "download_failed"}`
+~~~~
+{
+   "error": "download_failed"
+}
+~~~~
