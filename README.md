@@ -19,17 +19,21 @@ To use VidGrab within your own Python script, you would first import the library
 import vidgrab
 dict_out = vidgrab.get(url, video_save_path, caption_save_path, write_caption, debug, write_if_both)
 ~~~
-The last 3 arguments are optional. Their meanings and default values are detailed below in the "Optional Arguments" section.
+Note that `video_save_path` and `caption_save_path` take in a file path to the saved video or caption file, e.g. "./videos/video1.mp4", "./videos/caption1.json".
+
+The last 3 arguments are optional. Their meanings and default values are detailed below in the "Argument Descriptions and Flags" section.
 
 ### Shell Script
 To use this tool with the command line interface (CLI), you would use the following command:
 ```
 python vidgrab.py -u <video url> -v <video save path> -c <caption save path>
 ```
-### Optional Arguments and Flags
-There are also a number of optional arguments/flags you can use.
+### Argument Descriptions and Flags
 | Flag               | Meaning     | Default Value |
 | ------------------ | ----------- | ------------- |
+| -u --url           | Takes in a valid link to a video  | NA, argument required |
+| -v --video_path    | Takes in a file path to a .mp4 file that does not exist yet | NA, argument required |
+| -c --caption_path  | Takes in a file path to a .json file that does not exist yet | NA, argument required |
 | -w --write_caption | Write the output into a .json file  | False |
 | -d --debug         | Turn on debuging mode  | False |
 | -b --write_if_both | Only write the output into a .json file if both the video and captions are available | False |
