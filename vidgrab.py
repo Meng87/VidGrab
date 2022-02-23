@@ -3,7 +3,20 @@ import pytube
 import xmltodict, json
 
 def get(url, video_path, caption_path, write_caption=False, debug=False, write_if_both=False):
-   if (not os.path.isdir(video_path) or not os.path.isdir(caption_path)):
+   # Parse video and caption filepaths
+   vidpath_components = video_path.split("/")
+   vid_dirpath = ""
+   for d in vidpath_components[0:-1]:
+      vid_dirpath = os.path.join(vid_dirpath, d)
+   vid_name = vidpath_components[-1]
+
+   cappath_components = caption_path.split("/")
+   cap_dirpath = ""
+   for e in cappath_components[0:-1]:
+      cap_dirpath = os.path.join(cap_dirpath, e)
+   cap_name = cappath_components[-1]
+
+   if (not os.path.isdir(vid_dirpath) or not os.path.isdir(cap_dirpath)):
       print("Error: Invalid File Path.")
       return
    
@@ -13,8 +26,6 @@ def get(url, video_path, caption_path, write_caption=False, debug=False, write_i
    except:
       print("Error: Invalid URL.")
       return
-   
-   filename = pytube.extract.video_id(url)
 
    # Only download progressive streams
    prog = yt.streams.filter(progressive=True)
@@ -24,25 +35,24 @@ def get(url, video_path, caption_path, write_caption=False, debug=False, write_i
       output = {"error": "video_not_found"}
       if (write_caption):
          json_data = json.dumps(output)
-         filepath = caption_path + "/" + filename
-         with open(filepath + ".json", "w+") as json_file:
+         with open(caption_path, "w+") as json_file:
             json_file.write(json_data)
       return output
    else:
       try:
-         bestVid.download(video_path, filename + ".mp4")
+         bestVid.download(vid_dirpath, vid_name)
       except:
          if (debug): print("[DEBUG] Download Failed.")
          output = {"error": "download_failed"}
          if (write_caption):
             json_data = json.dumps(output)
-            filepath = caption_path + "/" + filename
-            with open(filepath + ".json", "w+") as json_file:
+            with open(caption_path, "w+") as json_file:
                json_file.write(json_data)
          return output
 
    # Get captions
    transcript_type = None
+   video_id = pytube.extract.video_id(url)
    if ('en' in yt.captions):
       transcript_type = "human"
       caption = yt.captions['en']
@@ -52,30 +62,22 @@ def get(url, video_path, caption_path, write_caption=False, debug=False, write_i
    else:
       if (debug): print("[DEBUG] No English captions available.")
       output = {
-         'video_id': filename,
+         'video_id': video_id,
          'url': url,
-         'video_path': video_path + "/" + filename + ".mp4",
+         'video_path': video_path,
          'chunks': None,
          'intervals': None,
          'transcript_type': None
       }
       if (write_caption and not write_if_both):
          json_data = json.dumps(output)
-         filepath = caption_path + "/" + filename
-         with open(filepath + ".json", "w+") as json_file:
+         with open(caption_path, "w+") as json_file:
             json_file.write(json_data)
       return output
       
 
    if (caption != None):
-      filepath = caption_path + "/" + filename
-      
-      with open(filepath + ".xml", "w+") as caption_file:
-         caption_file.write(caption.xml_captions)
-         if (debug): print("[DEBUG] Saved captions as xml.")
-
-      with open(filepath + ".xml") as xml_file:
-         data_dict = xmltodict.parse(xml_file.read())
+      data_dict = xmltodict.parse(caption.xml_captions)
       
       # Convert to json
       json_data = json.dumps(data_dict)
@@ -104,20 +106,19 @@ def get(url, video_path, caption_path, write_caption=False, debug=False, write_i
                intervals_list.append((start_time, str(int(start_time) + int(duration))))
             else: continue
       output = {
-            'video_id': filename,
+            'video_id': video_id,
             'url': url,
-            'video_path': video_path + "/" + filename + ".mp4",
+            'video_path': video_path,
             'chunks': chunks_list,
             'intervals': intervals_list,
             'transcript_type': transcript_type
          }
       if (write_caption):
          json_data = json.dumps(output)
-         filepath = caption_path + "/" + filename
-         with open(filepath + ".json", "w+") as json_file:
+         with open(caption_path, "w+") as json_file:
             json_file.write(json_data)
             if (debug): print("[DEBUG] Saved captions as json.")
-      # return output
+      return output
 
 if __name__ == "__main__":
    url, video_path, caption_path = None, None, None
