@@ -2,7 +2,11 @@ import sys, getopt, os
 import pytube
 import xmltodict, json
 
-def get(url, video_path, caption_path, write_caption=False, debug=False, write_if_both=False):
+def get(url, video_path, caption_path=None, write_caption=False, debug=False, write_if_both=False):
+   if (url == None or video_path == None or (write_caption and caption_path == None)): # check invalid
+      print("Usage: get.py -u <video url> -v <video save path> -c <caption save path>")
+      sys.exit(2)
+   
    # Parse video and caption filepaths
    vidpath_components = video_path.split("/")
    vid_dirpath = ""
@@ -10,13 +14,14 @@ def get(url, video_path, caption_path, write_caption=False, debug=False, write_i
       vid_dirpath = os.path.join(vid_dirpath, d)
    vid_name = vidpath_components[-1]
 
-   cappath_components = caption_path.split("/")
-   cap_dirpath = ""
-   for e in cappath_components[0:-1]:
-      cap_dirpath = os.path.join(cap_dirpath, e)
-   cap_name = cappath_components[-1]
+   if (caption_path != None):
+      cappath_components = caption_path.split("/")
+      cap_dirpath = ""
+      for e in cappath_components[0:-1]:
+         cap_dirpath = os.path.join(cap_dirpath, e)
+      cap_name = cappath_components[-1]
 
-   if (not os.path.isdir(vid_dirpath) or not os.path.isdir(cap_dirpath)):
+   if (not os.path.isdir(vid_dirpath) or (write_caption and not os.path.isdir(cap_dirpath))):
       print("Error: Invalid File Path.")
       return
    
@@ -125,10 +130,10 @@ if __name__ == "__main__":
    write_caption, debug, write_if_both = None, None, None
    try:
       opts, args = getopt.getopt(sys.argv[1:],
-                                 "u:v:c:wdb",
+                                 "u:v:cwdb",
                                  ["url=","video_path=","caption_path=",
                                   "write_caption=", "debug=",
-                                  "write_if_both=True="])
+                                  "write_if_both="])
    except getopt.GetoptError:
       print("Usage: get.py -u <video url> -v <video save path> -c <caption save path>\n")
       sys.exit(2)
@@ -145,7 +150,4 @@ if __name__ == "__main__":
          debug = True
       elif opt in ("-b", "--write_if_both"):
          write_if_both = True
-   if (url == None or video_path == None or caption_path == None): # check invalid
-      print("Usage: get.py -u <video url> -v <video save path> -c <caption save path>")
-      sys.exit(2)
    get(url, video_path, caption_path, write_caption, debug, write_if_both)
