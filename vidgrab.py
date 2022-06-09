@@ -4,7 +4,7 @@ import xmltodict, json
 
 def get(url, video_path, caption_path=None, write_caption=False, debug=False, write_if_both=False):
    if (url == None or video_path == None or (write_caption and caption_path == None)): # check invalid
-      print("Usage: get.py -u <video url> -v <video save path> -c <caption save path>")
+      print("Usage: vidgrab.py -u <video url> -v <video save path> -c <caption save path>")
       sys.exit(2)
    
    # Parse video and caption filepaths
@@ -135,7 +135,7 @@ if __name__ == "__main__":
                                   "write_caption=", "debug=",
                                   "write_if_both="])
    except getopt.GetoptError:
-      print("Usage: get.py -u <video url> -v <video save path> -c <caption save path>\n")
+      print("Usage: vidgrab.py -u <video url> -v <video save path> -c <caption save path>\n")
       sys.exit(2)
    for opt, arg in opts:
       if opt in ("-u", "--url"):
